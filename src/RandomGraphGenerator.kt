@@ -1,5 +1,6 @@
 package MainKt
 
+import random
 import kotlin.random.Random
 import java.io.File
 import kotlin.math.ceil
@@ -13,14 +14,14 @@ class RandomGraphGenerator(var amount : Int)
         val res : MutableList<MutableList<Int>> = MutableList(amount,{ m -> MutableList(0,{s->0}) })
         for( i in  0 until amount)
         {
-            val amountOfEdges = Random.nextInt(1,amount/2)
+            val amountOfEdges = random.nextInt(1,amount/2)
             val subList : MutableList<Int> = MutableList(amountOfEdges,{s->-1})
             for(j in 0 until amountOfEdges)
             {
-                var rnd = Random.nextInt(0,amount)
+                var rnd = random.nextInt(0,amount)
                 while( subList.contains(rnd) || rnd == i)
                 {
-                    rnd = Random.nextInt(0,amount)
+                    rnd = random.nextInt(0,amount)
                 }
                 subList[j] = rnd
                 if(!res[rnd].contains(i)) res[rnd].add(i)
@@ -55,7 +56,7 @@ class RandomGraphGenerator(var amount : Int)
         println("generate distribution "+amountOfEdges.toString())
         for (i in 1 until amount)
         {
-            edgesDistribution[i] = Random.nextInt(1, i + 1)
+            edgesDistribution[i] = random.nextInt(1, i + 1)
         }
         var actualSum : Long = edgesDistribution.sumLong()
 
@@ -150,10 +151,10 @@ class RandomGraphGenerator(var amount : Int)
         println("incrise edges distribution "+distributionDiff.toString())
         for (i in 0 until distributionDiff)
         {
-            var rndIndex = Random.nextInt(0, amount)
+            var rndIndex = random.nextInt(0, amount)
             while (!incrised.add(rndIndex))
             {
-                rndIndex = Random.nextInt(0, amount)
+                rndIndex = random.nextInt(0, amount)
             }
             edgesDistribution[rndIndex]++
         }
@@ -164,10 +165,10 @@ class RandomGraphGenerator(var amount : Int)
         {
             for (j in 0 until edgesDistribution[i])
             {
-                var rndIndex = Random.nextInt(0, i)
+                var rndIndex = random.nextInt(0, i)
                 while (graphMatrix[i][rndIndex])
                 {
-                    rndIndex = Random.nextInt(0, i)
+                    rndIndex = random.nextInt(0, i)
                 }
                 graphMatrix[i][rndIndex] = true
             }
@@ -216,9 +217,10 @@ class RandomGraphGenerator(var amount : Int)
         val edgesDistribution: IntArray = IntArray(amount, { s -> 0 })
 
         println("generate distribution "+amountOfEdges.toString())
-        for (i in 1 until amount)
+        edgesDistribution[1] = random.nextInt(0,1)
+        for (i in 2 until amount)
         {
-            edgesDistribution[i] = Random.nextInt(1, i + 1)
+            edgesDistribution[i] = random.nextInt(1, i)
         }
         var actualSum : Long = edgesDistribution.sumLong()
 
@@ -230,11 +232,8 @@ class RandomGraphGenerator(var amount : Int)
 
         for (i in 0 until edgesDistribution.size)
         {
-            //if( edgesDistribution[i] > ( ceil( actualSum.toDouble() / amountOfEdges.toDouble() ) ).toInt() )
-            //{
             edgesDistribution[i] =
                     (floor((edgesDistribution[i].toDouble() * (amountOfEdges.toDouble() / actualSum.toDouble())))).toInt()
-            //}
         }
 
         actualSum = edgesDistribution.sumLong()
@@ -292,7 +291,7 @@ class RandomGraphGenerator(var amount : Int)
 
             }
             println("remove 0 edges vertex "+zeroEdgesVertexAmount.toString())
-            for(i in 0 until edgesDistribution.size)
+            for(i in 1 until edgesDistribution.size)
             {
                 if(edgesDistribution[i] == 0)edgesDistribution[i]++
             }
@@ -303,7 +302,7 @@ class RandomGraphGenerator(var amount : Int)
         {
             println("remove 0 edges vertex "+zeroEdgesVertexAmount.toString())
             distributionDiff -= zeroEdgesVertexAmount
-            for(i in 0 until edgesDistribution.size)
+            for(i in 1 until edgesDistribution.size)
             {
                 if(edgesDistribution[i] == 0)edgesDistribution[i]++
             }
@@ -313,16 +312,24 @@ class RandomGraphGenerator(var amount : Int)
         println("incrise edges distribution "+distributionDiff.toString())
         for (i in 0 until distributionDiff)
         {
-            var rndIndex = Random.nextInt(0, amount)
-            while (!incrised.add(rndIndex))
+            var rndIndex = random.nextInt(1, amount)
+            while (!incrised.add(rndIndex) || edgesDistribution[rndIndex] >= amount - 1 || edgesDistribution[rndIndex] >= rndIndex)
             {
-                rndIndex = Random.nextInt(0, amount)
+                rndIndex = random.nextInt(0, amount)
             }
             edgesDistribution[rndIndex]++
         }
 
 
         println("fill struct of matrix")
+
+        //debug start
+        edgesDistribution.forEach { i -> print(i.toString()+" ") }
+        println()
+        //debug ends
+
+
+
         var graph : Array<HashSet<Int>> = Array(amount , { i -> HashSet<Int>() } )
         //for(i in 1 until amount)
         //{
@@ -331,10 +338,10 @@ class RandomGraphGenerator(var amount : Int)
                 println(i.toString())
                 for (j in 0 until edgesDistribution[i])
                 {
-                    var rndIndex = Random.nextInt(0, i)
+                    var rndIndex = random.nextInt(0, i)
                     while (!graph[i].add(rndIndex))
                     {
-                        rndIndex = Random.nextInt(0, i)
+                        rndIndex = random.nextInt(0, i)
                     }
                     graph[rndIndex].add(i)
                 }
